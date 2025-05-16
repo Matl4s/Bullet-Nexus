@@ -1,3 +1,4 @@
+using System;
 using System.Linq.Expressions;
 using UnityEngine;
 
@@ -6,6 +7,7 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private float maxHealth;
     private float currentHealth;
     public HealthBar healthbar;
+    public static event Action WhenPlayerDie;
     private void Start()
     {
         currentHealth = maxHealth;
@@ -43,7 +45,12 @@ public class PlayerStats : MonoBehaviour
 
     private void PlayerDeath()
         {
+            currentHealth = 0;
             Debug.Log("You Died");
+            // WhenPlayerDie = event
+            //? zaručuje, že se akce zavolá jenom když WhenPlayerDie není null
+            // invoke = spustí všechny funkce, které jsou přiřazené tomuto eventu
+            WhenPlayerDie?.Invoke();
         }
     
 }

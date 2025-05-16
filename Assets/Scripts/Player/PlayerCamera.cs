@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerCamera : MonoBehaviour
 {
+    
     public Camera cam;
 
     public float xSensitivity = 30f;
@@ -11,7 +12,11 @@ public class PlayerCamera : MonoBehaviour
     
     private float xRotation = 0f;
 
-
+    void Start()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
     public void ProcessLook(Vector2 input)
     {
         float mouseX = input.x;
@@ -29,5 +34,6 @@ public class PlayerCamera : MonoBehaviour
         // rotace hráče do leva a do prava
         transform.Rotate(Vector3.up * (mouseX * Time.deltaTime) * xSensitivity);
     }
+
 
 }

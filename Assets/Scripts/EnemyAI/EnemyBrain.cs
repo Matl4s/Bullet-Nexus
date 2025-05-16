@@ -7,7 +7,7 @@ public class EnemyBrain : MonoBehaviour
 {
     public NavMeshAgent agent;
     public Transform player;
-    public LayerMask whatIsGround, whatIsPlayer;
+    public LayerMask whatIsGround, whatIsPlayer, whatIsVisible;
 
     //patroling
     public Vector3 walkPoint;
@@ -25,6 +25,9 @@ public class EnemyBrain : MonoBehaviour
     //states
     public float sightRange, attackRange;
     public bool playerInSightRange, playerInAttackRange;
+
+    //audio
+    public AudioSource GunShotSound;
 
     private void Awake()
     {
@@ -92,18 +95,30 @@ public class EnemyBrain : MonoBehaviour
     {
         agent.SetDestination(transform.position);
         transform.LookAt(player);
-
         if (!alreadyAttacked)
         {
-            StartCoroutine(FlashMuzzleSprite());
-            StartCoroutine(FlashMuzzleLight());
-            //attack
-            Rigidbody rb = Instantiate(projectile, BulletSpawnTransform.position, Quaternion.identity).GetComponent<Rigidbody>();
-            Vector3 direction = (player.position - BulletSpawnTransform.position).normalized;
-            rb.AddForce(direction * 32f, ForceMode.Impulse);
 
-            alreadyAttacked = true;
-            Invoke(nameof(ResetAttack), timeBetweenAttacks);
+            //raycast aby se zjistilo, jestli se nenachází mezí hráčem a AI zeď nebo cokoliv jiného, co by mohlo blokovat střelbu
+            Vector3 directionY = (player.position - BulletSpawnTransform.position).normalized;
+            float distanceToPlayer = Vector3.Distance(BulletSpawnTransform.position,player.position);
+            RaycastHit hit;
+
+            if (Physics.Raycast(BulletSpawnTransform.position,directionY,out hit,distanceToPlayer,whatIsVisible))
+            {
+                if (hit.transform.CompareTag("Player"))
+                {
+                    StartCoroutine(FlashMuzzleSprite());
+                    StartCoroutine(FlashMuzzleLight());
+                    GunShotSound.Play();
+                    //attack
+                    Rigidbody rb = Instantiate(projectile, BulletSpawnTransform.position, Quaternion.identity).GetComponent<Rigidbody>();
+                    Vector3 direction = (player.position - BulletSpawnTransform.position).normalized;
+                    rb.AddForce(direction * 32f, ForceMode.Impulse);
+
+                    alreadyAttacked = true;
+                    Invoke(nameof(ResetAttack), timeBetweenAttacks);
+                }
+            }
         }
     }
     private IEnumerator FlashMuzzleLight()

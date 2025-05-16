@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerShoot : MonoBehaviour
@@ -19,6 +20,8 @@ public class PlayerShoot : MonoBehaviour
    public int currentAmmo=48;
    public int maxAmmo=48;
 
+    [SerializeField] AudioSource ReloadSound;
+
     void Start()
     {
         MuzzleFlash.SetActive(false);
@@ -26,6 +29,9 @@ public class PlayerShoot : MonoBehaviour
 
     private void Update()
    {
+    if (Time.timeScale == 0f)
+        return;
+
     if(timer>0)
     {
         timer -= Time.deltaTime / fireRate;
@@ -80,6 +86,7 @@ public class PlayerShoot : MonoBehaviour
 
     public void Reload()
     {
+        ReloadSound.Play();
         int reloadAmount = clipSize - currentClip;
         reloadAmount = (currentAmmo - reloadAmount) >=0 ? reloadAmount : currentAmmo;
         currentClip += reloadAmount;

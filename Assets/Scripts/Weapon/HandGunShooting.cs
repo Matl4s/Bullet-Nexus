@@ -11,17 +11,20 @@ public class HandGunShooting : MonoBehaviour
 
     void Update()
     {
-            if (Input.GetMouseButton(0))
+        if (Time.timeScale == 0f)
+            return;
+
+        if (Input.GetMouseButton(0))
+        {
+            if(playerShoot.currentClip>0)
             {
-                if(playerShoot.currentClip>0)
+                if(canFire == true)
                 {
-                    if(canFire == true)
-                    {
-                        canFire = false;
-                        StartCoroutine(FiringGun()); 
-                    }
+                    canFire = false;
+                    StartCoroutine(FiringGun()); 
                 }
             }
+        }
     }
 
     //Jak se deklaruje co routine (ko rutina) a FiringGun je coroutine
